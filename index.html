@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/proj4.js"></script>
+        <script src="js/proj4leaflet.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/DataSensusLor_0.js"></script>
+        <script src="data/BatasAdministrasiRTRWMendoloLor_1.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+            highlightLayer.openPopup();
+        }
+        var crs = new L.Proj.CRS('EPSG:32749', '+proj=utm +zone=49 +south +datum=WGS84 +units=m +no_defs', {
+            resolutions: [2800, 1400, 700, 350, 175, 84, 42, 21, 11.2, 5.6, 2.8, 1.4, 0.7, 0.35, 0.14, 0.07],
+        });
+        var map = L.map('map', {
+            crs: crs,
+            continuousWorld: false,
+            worldCopyJump: false, 
+            zoomControl:true, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+        }
+        function pop_DataSensusLor_0(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['kdprov'] !== null ? autolinker.link(feature.properties['kdprov'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['kdkab'] !== null ? autolinker.link(feature.properties['kdkab'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['kdkec'] !== null ? autolinker.link(feature.properties['kdkec'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['kddesa'] !== null ? autolinker.link(feature.properties['kddesa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['kdsls'] !== null ? autolinker.link(feature.properties['kdsls'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['idsls'] !== null ? autolinker.link(feature.properties['idsls'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmprov'] !== null ? autolinker.link(feature.properties['nmprov'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmkab'] !== null ? autolinker.link(feature.properties['nmkab'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmkec'] !== null ? autolinker.link(feature.properties['nmkec'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmdesa'] !== null ? autolinker.link(feature.properties['nmdesa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmsls'] !== null ? autolinker.link(feature.properties['nmsls'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['luas'] !== null ? autolinker.link(feature.properties['luas'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['sumber'] !== null ? autolinker.link(feature.properties['sumber'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmdusun'] !== null ? autolinker.link(feature.properties['nmdusun'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['RT'] !== null ? autolinker.link(feature.properties['RT'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Dusun'] !== null ? autolinker.link(feature.properties['Dusun'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['RT RW'] !== null ? autolinker.link(feature.properties['RT RW'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['layer'] !== null ? autolinker.link(feature.properties['layer'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['path'] !== null ? autolinker.link(feature.properties['path'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['jml_sp'] !== null ? autolinker.link(feature.properties['jml_sp'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['jntn_sp'] !== null ? autolinker.link(feature.properties['jntn_sp'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['btn_sp'] !== null ? autolinker.link(feature.properties['btn_sp'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['anak_sp'] !== null ? autolinker.link(feature.properties['anak_sp'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['bkln_sp'] !== null ? autolinker.link(feature.properties['bkln_sp'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['dws_sp'] !== null ? autolinker.link(feature.properties['dws_sp'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['jml_kmbng'] !== null ? autolinker.link(feature.properties['jml_kmbng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['jntn_kmbng'] !== null ? autolinker.link(feature.properties['jntn_kmbng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['btn_kmbng'] !== null ? autolinker.link(feature.properties['btn_kmbng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['anak_kmbng'] !== null ? autolinker.link(feature.properties['anak_kmbng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['bkln_kmbng'] !== null ? autolinker.link(feature.properties['bkln_kmbng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['dws_kmbng'] !== null ? autolinker.link(feature.properties['dws_kmbng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['sdh_vksn'] !== null ? autolinker.link(feature.properties['sdh_vksn'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['blm_vksn'] !== null ? autolinker.link(feature.properties['blm_vksn'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_DataSensusLor_0_0(feature) {
+            if (feature.properties['jml_sp'] >= 12.000000 && feature.properties['jml_sp'] <= 16.400000 ) {
+                return {
+                pane: 'pane_DataSensusLor_0',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,245,240,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['jml_sp'] >= 16.400000 && feature.properties['jml_sp'] <= 24.800000 ) {
+                return {
+                pane: 'pane_DataSensusLor_0',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(252,190,165,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['jml_sp'] >= 24.800000 && feature.properties['jml_sp'] <= 30.400000 ) {
+                return {
+                pane: 'pane_DataSensusLor_0',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(251,112,80,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['jml_sp'] >= 30.400000 && feature.properties['jml_sp'] <= 34.200000 ) {
+                return {
+                pane: 'pane_DataSensusLor_0',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(211,32,32,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['jml_sp'] >= 34.200000 && feature.properties['jml_sp'] <= 39.000000 ) {
+                return {
+                pane: 'pane_DataSensusLor_0',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(103,0,13,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_DataSensusLor_0');
+        map.getPane('pane_DataSensusLor_0').style.zIndex = 400;
+        map.getPane('pane_DataSensusLor_0').style['mix-blend-mode'] = 'normal';
+        var layer_DataSensusLor_0 = new L.geoJson(json_DataSensusLor_0, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_DataSensusLor_0',
+            layerName: 'layer_DataSensusLor_0',
+            pane: 'pane_DataSensusLor_0',
+            onEachFeature: pop_DataSensusLor_0,
+            style: style_DataSensusLor_0_0,
+        });
+        bounds_group.addLayer(layer_DataSensusLor_0);
+        map.addLayer(layer_DataSensusLor_0);
+        function pop_BatasAdministrasiRTRWMendoloLor_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmprov'] !== null ? autolinker.link(feature.properties['nmprov'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmkab'] !== null ? autolinker.link(feature.properties['nmkab'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmkec'] !== null ? autolinker.link(feature.properties['nmkec'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmdesa'] !== null ? autolinker.link(feature.properties['nmdesa'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['nmsls'] !== null ? autolinker.link(feature.properties['nmsls'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['luas'] !== null ? autolinker.link(feature.properties['luas'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['sumber'] !== null ? autolinker.link(feature.properties['sumber'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Dusun</th>\
+                        <td>' + (feature.properties['Dusun'] !== null ? autolinker.link(feature.properties['Dusun'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['RT RW'] !== null ? autolinker.link(feature.properties['RT RW'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_BatasAdministrasiRTRWMendoloLor_1_0() {
+            return {
+                pane: 'pane_BatasAdministrasiRTRWMendoloLor_1',
+                opacity: 1,
+                color: 'rgba(255,255,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        function style_BatasAdministrasiRTRWMendoloLor_1_1() {
+            return {
+                pane: 'pane_BatasAdministrasiRTRWMendoloLor_1',
+                opacity: 1,
+                color: 'rgba(51,51,51,1.0)',
+                dashArray: '10,5,1,5,1,5',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_BatasAdministrasiRTRWMendoloLor_1');
+        map.getPane('pane_BatasAdministrasiRTRWMendoloLor_1').style.zIndex = 401;
+        map.getPane('pane_BatasAdministrasiRTRWMendoloLor_1').style['mix-blend-mode'] = 'normal';
+        var layer_BatasAdministrasiRTRWMendoloLor_1 = new L.geoJson.multiStyle(json_BatasAdministrasiRTRWMendoloLor_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_BatasAdministrasiRTRWMendoloLor_1',
+            layerName: 'layer_BatasAdministrasiRTRWMendoloLor_1',
+            pane: 'pane_BatasAdministrasiRTRWMendoloLor_1',
+            onEachFeature: pop_BatasAdministrasiRTRWMendoloLor_1,
+            styles: [style_BatasAdministrasiRTRWMendoloLor_1_0,style_BatasAdministrasiRTRWMendoloLor_1_1,]
+        });
+        bounds_group.addLayer(layer_BatasAdministrasiRTRWMendoloLor_1);
+        map.addLayer(layer_BatasAdministrasiRTRWMendoloLor_1);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/BatasAdministrasiRTRWMendoloLor_1.png" /> Batas Administrasi RT RW - Mendolo Lor': layer_BatasAdministrasiRTRWMendoloLor_1,'Data Sensus Lor<br /><table><tr><td style="text-align: center;"><img src="legend/DataSensusLor_0_121640.png" /></td><td>12 - 16.4</td></tr><tr><td style="text-align: center;"><img src="legend/DataSensusLor_0_1642481.png" /></td><td>16.4 - 24.8</td></tr><tr><td style="text-align: center;"><img src="legend/DataSensusLor_0_2483042.png" /></td><td>24.8 - 30.4</td></tr><tr><td style="text-align: center;"><img src="legend/DataSensusLor_0_3043423.png" /></td><td>30.4 - 34.2</td></tr><tr><td style="text-align: center;"><img src="legend/DataSensusLor_0_342394.png" /></td><td>34.2 - 39</td></tr></table>': layer_DataSensusLor_0,}).addTo(map);
+        setBounds();
+        var i = 0;
+        layer_BatasAdministrasiRTRWMendoloLor_1.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Dusun'] !== null?String('<div style="color: #ffb909; font-size: 9pt; font-weight: bold; font-family: \'Arial\', sans-serif;">' + layer.feature.properties['Dusun']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BatasAdministrasiRTRWMendoloLor_1'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        map.addControl(new L.Control.Search({
+            layer: layer_DataSensusLor_0,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'sdh_vksn'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"anak_kmbng": "int","RT": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+        var i = 0;
+        layer_BatasAdministrasiRTRWMendoloLor_1.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Dusun'] !== null?String('<div style="color: #ffb909; font-size: 9pt; font-weight: bold; font-family: \'Arial\', sans-serif;">' + layer.feature.properties['Dusun']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_BatasAdministrasiRTRWMendoloLor_1'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_anak_kmbng = document.createElement("div");
+            div_anak_kmbng.id = "div_anak_kmbng";
+            div_anak_kmbng.className = "slider";
+            document.getElementById("menu").appendChild(div_anak_kmbng);
+            var lab_anak_kmbng = document.createElement('div');
+            lab_anak_kmbng.innerHTML  = 'anak_kmbng: <span id="val_anak_kmbng"></span>';
+            lab_anak_kmbng.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab_anak_kmbng);
+            var reset_anak_kmbng = document.createElement('div');
+            reset_anak_kmbng.innerHTML = 'clear filter';
+            reset_anak_kmbng.className = 'filterlabel';
+            lab_anak_kmbng.className = 'filterlabel';
+            reset_anak_kmbng.onclick = function() {
+                sel_anak_kmbng.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset_anak_kmbng);
+            var sel_anak_kmbng = document.getElementById('div_anak_kmbng');
+            noUiSlider.create(sel_anak_kmbng, {
+                connect: true,
+                start: [1, 19],
+                step: 1,
+                format: wNumb({
+                    decimals: 0,
+                    }),
+                range: {
+                min: 1,
+                max: 19
+                }
+            });
+            sel_anak_kmbng.noUiSlider.on('update', function (values) {
+            filterVals =[];
+            for (value in values){
+            filterVals.push(parseInt(value))
+            }
+            val_anak_kmbng = document.getElementById('val_anak_kmbng');
+            val_anak_kmbng.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_RT = document.createElement('div');
+            div_RT.id = "div_RT";
+            div_RT.className= "filterselect";
+            document.getElementById("menu").appendChild(div_RT);
+            sel_RT = document.createElement('select');
+            sel_RT.multiple = true;
+            sel_RT.size = 4;
+            sel_RT.id = "sel_RT";
+            var RT_options_str = "<option value='' unselected></option>";
+            sel_RT.onchange = function(){filterFunc()};
+            RT_options_str  += '<option value="NULL">NULL</option>';
+            RT_options_str  += '<option value="RT 001">RT 001</option>';
+            RT_options_str  += '<option value="RT 002">RT 002</option>';
+            RT_options_str  += '<option value="RT 003">RT 003</option>';
+            sel_RT.innerHTML = RT_options_str;
+            div_RT.appendChild(sel_RT);
+            var lab_RT = document.createElement('div');
+            lab_RT.innerHTML = 'RT';
+            lab_RT.className = 'filterlabel';
+            div_RT.appendChild(lab_RT);
+            var reset_RT = document.createElement('div');
+            reset_RT.innerHTML = 'clear filter';
+            reset_RT.className = 'filterlabel';
+            reset_RT.onclick = function() {
+                var options = document.getElementById("sel_RT").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_RT.appendChild(reset_RT);
+        resetLabels([layer_BatasAdministrasiRTRWMendoloLor_1]);
+        map.on("zoomend", function(){
+            resetLabels([layer_BatasAdministrasiRTRWMendoloLor_1]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_BatasAdministrasiRTRWMendoloLor_1]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_BatasAdministrasiRTRWMendoloLor_1]);
+        });
+        </script>
+    </body>
+</html>
